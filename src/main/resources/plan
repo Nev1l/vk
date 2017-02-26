@@ -1,0 +1,11 @@
+To do:
+1. Handler manager as command pattern instead of chain
+2. AudioCommandDAO add more getAudio methods(audio search & etc)
+3.
+4. RateLimiter RATE_LIMITER !!! http request limitations???
+5. UI
+6.
+7. download first sections for watching/listening file
+   set priority for each section
+----------------------------------
+Refactoring:

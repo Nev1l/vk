@@ -2,6 +2,7 @@ package http;
 
 import handles.IHandle;
 import org.apache.http.client.RedirectStrategy;
+import org.apache.http.client.UserTokenHandler;
 import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -18,6 +19,7 @@ import org.apache.http.impl.conn.ManagedHttpClientConnectionFactory;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.impl.io.DefaultHttpRequestWriterFactory;
 import org.apache.http.message.BasicLineParser;
+import org.apache.http.protocol.HttpContext;
 import requestbuilder.RequestBuilder;
 
 import java.io.IOException;
@@ -48,9 +50,9 @@ public class Http {
                 connFactory);
         cm.setMaxTotal(200);
         cm.setDefaultMaxPerRoute(20);
-       /* UserTokenHandler useTokenHandler = new UserTokenHandler() {
+        /*UserTokenHandler useTokenHandler = new UserTokenHandler() {
             public Object getUserToken(HttpContext context) {
-                return context.getAttribute("securityToken");
+                return context.getAttribute(USER_ID);
             }
         };*/
         //String login, String password

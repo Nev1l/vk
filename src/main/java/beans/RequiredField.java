@@ -22,6 +22,11 @@ public class RequiredField {
         this.type = type;
     }
 
+    public RequiredField asKey(String name){
+        this.name = name;
+        return this;
+    }
+
     public String getDefaultValue() {
         return defaultValue;
     }

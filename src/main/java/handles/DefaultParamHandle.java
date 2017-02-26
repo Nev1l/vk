@@ -14,6 +14,8 @@ import java.util.Map;
  */
 public class DefaultParamHandle extends AbstractHandle {
     public final static String RESPONSE_GET_PARAM_ERROR_MESSAGE = "Can't get param from HttpResponse";
+    public final static String RESPONSE_CODE_ERROR_MESSAGE = "HTTP code: ";
+
     private DefaultParamHandle next;
 
     public DefaultParamHandle(Map<String, String> context) {
@@ -23,29 +25,40 @@ public class DefaultParamHandle extends AbstractHandle {
     public DefaultParamHandle() {
     }
 
-    public DefaultParamHandle addHandler(DefaultParamHandle handler){
-        handler.setContext(getContext());
-        setNext(handler);
-        return this;
-    }
-
     public boolean handle(CloseableHttpResponse response) throws IOException {
         HttpEntity entity = response.getEntity();
         int code = response.getStatusLine().getStatusCode();
         InputStream body = response.getEntity().getContent();
         boolean result = false;
-        if (entity.getContent() != null) {
-            result = handle(body);
+        if (code < 400){
+            if (entity.getContent() != null) {
+                result = handle(body);
+            }
+        }else{
+            System.out.println(RESPONSE_CODE_ERROR_MESSAGE +code);
         }
         return result;
     }
 
-    public boolean handle(InputStream stream) throws IOException {
+    protected byte[] duplicateStream(InputStream stream) throws IOException {
+        return IOUtils.toByteArray(stream);
+    }
+    public final boolean handle(InputStream stream) throws IOException {
         byte[] content = IOUtils.toByteArray(stream);
         boolean result = false;
         DefaultParamHandle current = getNext();
         while(current!=null){
-            result = current.handle(new ByteArrayInputStream(content));
+            result = current.handle(content.clone());
+            current = current.getNext();
+        }
+        return result;
+    }
+
+    public boolean handle(byte[] streamBytes) throws IOException {
+        boolean result = false;
+        DefaultParamHandle current = getNext();
+        while(current!=null){
+            result = current.handle(streamBytes.clone());
             current = current.getNext();
         }
         return result;

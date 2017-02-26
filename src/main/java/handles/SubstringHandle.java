@@ -24,19 +24,16 @@ public class SubstringHandle extends DefaultParamHandle {
         this.includeAfterPrefixToResult = includeAfterPrefixToResult;
         this.includeBeforePrefixToResult = includeBeforePrefixToResult;
     }
-
-    public boolean handle(InputStream stream) throws IOException {
-        String result = null;
+    public boolean handle(byte[] streamBytes) throws IOException {
+        String content = new String(streamBytes,AbstractHandle.charset);
         if (findBefore != null && findBefore != "" && findAfter != null && findAfter != "") {
-            result = substringParamByPrefixesBeforeAndAfter(streamAsString(stream), findBefore, findAfter, includeBeforePrefixToResult, includeAfterPrefixToResult);
+            content = substringParamByPrefixesBeforeAndAfter(content, findBefore, findAfter, includeBeforePrefixToResult, includeAfterPrefixToResult);
         } else if (findBefore != null && findBefore != "") {
-            result = substringParamBefore(streamAsString(stream), findBefore, includeBeforePrefixToResult);
+            content = substringParamBefore(content, findBefore, includeBeforePrefixToResult);
         } else if (findAfter != null && findAfter != "") {
-            result = substringParamAfter(streamAsString(stream), findAfter, includeAfterPrefixToResult);
-        } else {
-            result = streamAsString(stream);
+            content = substringParamAfter(content, findAfter, includeAfterPrefixToResult);
         }
-        getContext().put(paramName, result);
+        getContext().put(paramName, content);
         return true;
     }
 

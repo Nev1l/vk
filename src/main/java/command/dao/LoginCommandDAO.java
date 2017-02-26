@@ -17,6 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class LoginCommandDAO extends AbstractCommandDAO {
     public final static String URL_VK = "http://vk.com";
     public final static String URL_LOGIN_VK = "https://login.vk.com/";
+    public final static String USER_ID = "user_id";
     public final static String PARAM_KEY_LG_H = "lg_h";
     public final static String PARAM_KEY_IP_H = "ip_h";
     public final static String PARAM_KEY_ACT = "act";
@@ -50,9 +51,10 @@ public class LoginCommandDAO extends AbstractCommandDAO {
     }
 
     public void login(String login, String password) throws IOException {
-        getRequestCommandList().add(new RequestCommand(new RequestBuilder(URL_VK, RequestMethod.GET, new RequestContext(getContext())), new DefaultParamHandle(getContext())
-                .addHandler(new FindParamHandle(PARAM_KEY_LG_H, PARAM_KEY_LG_H + SEARCH_EQ, SEARCH_AMP))
-                .addHandler(new FindParamHandle(PARAM_KEY_IP_H, PARAM_KEY_IP_H + SEARCH_EQ, SEARCH_AMP)), getHttp()));
+        getRequestCommandList().add(new RequestCommand(new RequestBuilder(URL_VK, RequestMethod.GET, new RequestContext(getContext())), new DefaultParamHandleManager(getContext())
+                .addHandler(new SubstringSkipPrefixesHandle(PARAM_KEY_LG_H, PARAM_KEY_LG_H + SEARCH_EQ, SEARCH_AMP))
+                .addHandler(new SubstringSkipPrefixesHandle(PARAM_KEY_IP_H, PARAM_KEY_IP_H + SEARCH_EQ, SEARCH_AMP))
+                , getHttp()));
         RequestContext requestContext = new RequestContext(getContext());
         requestContext.getRequestFields().add(new RequiredField(PARAM_KEY_ACT, PARAM_VALUE_ACT, RequiredFieldType.PARAM));
         requestContext.getRequestFields().add(new RequiredField(PARAM_KEY_ROLE, PARAM_VALUE_ROLE, RequiredFieldType.PARAM));
@@ -65,7 +67,7 @@ public class LoginCommandDAO extends AbstractCommandDAO {
         requestContext.getRequestFields().add(new RequiredField(PARAM_KEY_CAPTCHA_KEY, PARAM_EMPTY_VALUE, RequiredFieldType.PARAM));
         requestContext.getRequestFields().add(new RequiredField(PARAM_KEY_ORIGIN, URL_VK, RequiredFieldType.PARAM));
         requestContext.getRequestFields().add(new RequiredField(PARAM_KEY_Q, PARAM_VALUE_Q, RequiredFieldType.PARAM));
-        getRequestCommandList().add(new RequestCommand(new RequestBuilder(URL_LOGIN_VK, RequestMethod.POST, requestContext), new DefaultParamHandle(getContext()), getHttp()));
+        getRequestCommandList().add(new RequestCommand(new RequestBuilder(URL_LOGIN_VK, RequestMethod.POST, requestContext), new DefaultParamHandleManager(getContext()).addHandler(new SubstringSkipPrefixesHandle(USER_ID,"onLoginDone('/id","');")), getHttp()));
         this.isAuthorized = execute();
     }
 }

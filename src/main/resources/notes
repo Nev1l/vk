@@ -1,0 +1,39 @@
+    public final static String EMAIL = "vik-kopachev@yandex.ru";
+    public final static String PASSWORD = "user852456";
+======
+1.Note:
+HttpGet request = new HttpGet(URL_SECURED_BY_BASIC_AUTHENTICATION);
+String auth = DEFAULT_USER + “:” + DEFAULT_PASS;
+byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset.forName(“ISO-8859-1”)));
+String authHeader = “Basic “ + new String(encodedAuth);
+request.setHeader(HttpHeaders.AUTHORIZATION, authHeader);
+HttpClient client = HttpClientBuilder.create().build();
+HttpResponse response = client.execute(request);
+int statusCode = response.getStatusLine().getStatusCode();
+assertThat(statusCode, equalTo(HttpStatus.SC_OK));
+
+Code cookie example:
+http://www.programcreek.com/java-api-examples/index.php?api=org.apache.http.client.CookieStore
+
+
+===[Upload file example]===
+ FileBody fileBody = new FileBody(file);
+ HttpEntity entity = MultipartEntityBuilder.create().addPart(fileName, fileBody).build();
+ request.setEntity(entity);
+
+
+===========[Cache with timeLife]========
+вместо того чтобы поток ходил по всем элементам в фоне, сделать кучу по времени жизни, и засыпать до момента когда нужно будет изъять ближайший.
+При вставке элемента посылать потоку-уборщику interrupt(чтобы узнать что в вершине кучи мог появится элемент который нужно удалить раньше).
+==[Multithreading]==
+http://stackoverflow.com/questions/28897316/download-manager-in-java-using-multi-threading
+==[Buffer I/O]==
+http://stackoverflow.com/questions/10166011/how-to-use-java-nio-channels-filechannel-to-write-a-byte-to-a-file-basics
+==[!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!]===
+http://stackoverflow.com/questions/8293687/sample-http-range-request-session
+
+outChannel.force(false);???
+http://www.javased.com/?api=java.nio.channels.ReadableByteChannel
+
+-----------
+https://github.com/cbeust/testng/issues/176
